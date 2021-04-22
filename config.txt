@@ -1,0 +1,5 @@
+ip=127.0.0.1
+port=25655
+difficulty=2
+updatePeriod=100
+savePeriod=5

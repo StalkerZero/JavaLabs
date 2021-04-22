@@ -8,16 +8,26 @@ public class EntityPlayer extends Entity {
     private boolean n;
 
     public EntityPlayer() {
-        super("player", 0, 0, false, 100, 100, 5);
+        super( "player", 0, 0, false, 100, 100, 5);
         Scanner scan = new Scanner(System.in);
         System.out.print("Введите ник: ");
         nickname = scan.next();
         n=true;
     }
 
+    public EntityPlayer( String title, double posX, double posY, boolean aggressive, int maxHealth, double health, int attackDamage, String nickname) {
+        super( title, posX, posY, aggressive, maxHealth, health, attackDamage);
+        this.nickname = nickname;
+    }
+
+    public EntityPlayer(long id, boolean life, String title, double posX, double posY, boolean aggressive, int maxHealth, double health, int attackDamage, String nickname) {
+        super(id, life, title, posX, posY, aggressive, maxHealth, health, attackDamage);
+        this.nickname = nickname;
+    }
+
     @Override
     public String toString() {
-        return "EntityPlayer{" +
+        return "\nEntityPlayer{" +
                 "id=" + id +
                 ", life=" + life +
                 ", title='" + title + '\'' +

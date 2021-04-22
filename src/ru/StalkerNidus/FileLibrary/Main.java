@@ -43,6 +43,7 @@ public class Main {
         books.add(new Book(3, "No", "Tolst", 1900));
         Library library = new Library(1, "adress", books);
         File file = new File("text.txt");
+        double ms = System.currentTimeMillis();
         try {
             FileUtils.write(file, library);
         } catch (IOException e) {
@@ -53,5 +54,18 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        System.out.println(System.currentTimeMillis()-ms);
+        ms=System.currentTimeMillis();
+        try {
+            FileUtils.write2(file, library);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        try {
+            System.out.println(FileUtils.read2(file).toString());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        System.out.println(System.currentTimeMillis()-ms);
     }
 }

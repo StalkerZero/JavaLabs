@@ -16,6 +16,12 @@ public class Library {
         this.books = books;
     }
 
+    public Library(int id, String address) {
+        this.id = id;
+        this.address = address;
+        books = new ArrayList<>();
+    }
+
     @Override
     public String toString() {
         return "Library{" +

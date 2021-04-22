@@ -1,43 +1,63 @@
 package ru.StalkerNidus.labs.laba3;
 
-import java.util.Scanner;
+import java.io.File;
+import java.io.IOException;
 
 public class GameServer {
-    private GameConfig config = new GameConfig();
-    private World serverWorld = new World();
+    private GameConfig config;
+    private World serverWorld;
     private int serverTicks = 0;
     private static GameServer instance;
 
     public void updateServer(){
         serverWorld.updateWorld();
         serverTicks++;
+        if (serverTicks%5==0) {
+            try {
+                FileUtils.saveWorld(new File("world.txt"), serverWorld);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
-    public GameServer(GameConfig config, World serverWorld, int serverTicks) {
+    private void loadConfig() throws IOException {
+        config = FileUtils.loadConfig(new File("config.txt"));
+        if(config!=null) return;
+        config = new GameConfig();
+        FileUtils.saveConfig(new File("config.txt"), config);
+    }
+    //вызывает FileUtils.loadConfig, если вернулся конфиг, то устанавливает его в поле config
+    //если вернулся null (файла нет) создает дефолтный конфиг и сразу сохранет его
+    private void loadWorld() throws IOException {
+        serverWorld = FileUtils.loadWorld(new File("world.txt"));
+        if(serverWorld!=null) return;
+        serverWorld = new World();
+        FileUtils.saveWorld(new File("world.txt"), serverWorld);
+    }
+    //вызывает FileUtils.loadWorld, если вернулся мир, то устанавливает его в поле serverWorld
+    //если мира нет, создает новый и сразу сохраняет его
+
+    public GameServer(GameConfig config, World serverWorld) {
+        instance = this;
         this.config = config;
         this.serverWorld = serverWorld;
-        this.serverTicks = serverTicks;
     }
 
     public GameServer(){
         instance = this;
-        Scanner scan = new Scanner(System.in);
-        System.out.print("How much Rats? ");
-        int rat=scan.nextInt();
-        System.out.print("How much Rabbits? ");
-        int rabb=scan.nextInt();
-        System.out.print("How much Players? ");
-        int play=scan.nextInt();
-        for (int i = 0; i < rat+rabb+play; i++) {
-            if (i<rat) serverWorld.getEntities().add(new Entity("Rat"));
-            else if (i<rat+rabb) serverWorld.getEntities().add(new Entity("Rabbit"));
-                 else serverWorld.getEntities().add(new EntityPlayer());
-        }
+        config = new GameConfig();
+        serverWorld = new World();
     }
 
     public static void main(String[] args) {
-        new GameServer();
-        System.out.println(instance.toString());
+ //       new GameServer();
+        try {
+            new GameServer(FileUtils.loadConfig(new File("config.txt")), FileUtils.loadWorld(new File("world.txt")));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        //System.out.println(instance.toString());
         for (int i = 0; i < 50; i++) {
             GameServer.getInstance().updateServer();
             try {
@@ -46,7 +66,14 @@ public class GameServer {
                 e.printStackTrace();
             }
         }
-        System.out.println(instance.toString());
+//        System.out.println(instance.toString());
+//        double ms = System.currentTimeMillis();
+//        try {
+//            FileUtils.saveWorld(new File("world.txt"), GameServer.getInstance().getServerWorld());
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//        System.out.println(System.currentTimeMillis()-ms);
     }
 
     @Override

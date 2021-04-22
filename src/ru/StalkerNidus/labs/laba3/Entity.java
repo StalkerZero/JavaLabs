@@ -3,7 +3,7 @@ package ru.StalkerNidus.labs.laba3;
 import java.util.List;
 
 public class Entity {
-    private static int idCounter = 1;
+    private static long idCounter = 1;
     protected final long id;
     protected boolean life;
     protected String title;
@@ -14,7 +14,6 @@ public class Entity {
     protected double health;
     protected int attackDamage;
     protected Entity target;
-    protected World world = GameServer.getInstance().getServerWorld();
 
     public Entity(String title){
         id = idCounter;
@@ -50,6 +49,19 @@ public class Entity {
         this.attackDamage = attackDamage;
     }
 
+    public Entity(long id, boolean life, String title, double posX, double posY, boolean aggressive, int maxHealth, double health, int attackDamage) {
+        this.id = id;
+        idCounter++;
+        this.life = life;
+        this.title = title;
+        this.posX = posX;
+        this.posY = posY;
+        this.aggressive = aggressive;
+        this.maxHealth = maxHealth;
+        this.health = health;
+        this.attackDamage = attackDamage;
+    }
+
     public void update() {
         if (!aggressive) return;
         if (target == null) searchTarget();
@@ -65,7 +77,7 @@ public class Entity {
 
     public void searchTarget(){
         List<Entity> entities = GameServer.getInstance().getServerWorld().getEntitiesNearEntity(this, 20);
-        System.out.println(GameServer.getInstance().getServerWorld().getEntitiesNearEntity(this, 20));
+        //System.out.println(GameServer.getInstance().getServerWorld().getEntitiesNearEntity(this, 20));
         for (Entity i : entities){
             if (!i.isAggressive() && i.isLife()){
                 target = i;
@@ -94,7 +106,7 @@ public class Entity {
 
     @Override
     public String toString() {
-        return "Entity{" +
+        return "\nEntity{" +
                 "id=" + id +
                 ", life=" + life +
                 ", title='" + title + '\'' +
@@ -105,6 +117,14 @@ public class Entity {
                 ", health=" + health +
                 ", attackDamage=" + attackDamage +
                 '}';
+    }
+
+    public static long getIdCounter() {
+        return idCounter;
+    }
+
+    public static void setIdCounter(long idCounter) {
+        Entity.idCounter = idCounter;
     }
 
     public Entity getTarget() {

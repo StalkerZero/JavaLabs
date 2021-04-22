@@ -13,7 +13,25 @@ public class World {
         this.entities = entities;
     }
 
-    public World(){}
+    public World(int id, String worldName) {
+        this.id = id;
+        this.worldName = worldName;
+    }
+
+    public World(){
+        Scanner scan = new Scanner(System.in);
+        System.out.print("How much Rats? ");
+        int rat=scan.nextInt();
+        System.out.print("How much Rabbits? ");
+        int rabb=scan.nextInt();
+        System.out.print("How much Players? ");
+        int play=scan.nextInt();
+        for (int i = 0; i < rat+rabb+play; i++) {
+            if (i<rat) entities.add(new Entity("Rat"));
+            else if (i<rat+rabb) entities.add(new Entity("Rabbit"));
+            else entities.add(new EntityPlayer());
+        }
+    }
 
     public void updateWorld(){
         for (int i = entities.size()-1; i >= 0; i--) {
@@ -65,6 +83,10 @@ public class World {
                 ", worldName='" + worldName + '\'' +
                 ", entities=" + entities +
                 '}';
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getId() {

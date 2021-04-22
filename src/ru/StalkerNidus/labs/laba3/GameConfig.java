@@ -1,10 +1,10 @@
 package ru.StalkerNidus.labs.laba3;
 
 public class GameConfig {
-    private String ip="127.0.01";
+    private String ip="127.0.0.1";
     private int port=25655;
     private int difficulty=2;
-    private long updatePeriod=1000;
+    private long updatePeriod=100;
     private int savePeriod=5;
 
     public GameConfig(){}
