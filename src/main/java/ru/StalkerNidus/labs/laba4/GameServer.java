@@ -1,7 +1,11 @@
-package ru.StalkerNidus.labs.laba3;
+package ru.StalkerNidus.labs.laba4;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.SQLException;
+
+import static ru.StalkerNidus.labs.laba4.DatabaseUtils.*;
+import static ru.StalkerNidus.labs.laba4.FileUtils.*;
 
 public class GameServer {
     private GameConfig config;
@@ -9,66 +13,76 @@ public class GameServer {
     private int serverTicks = 0;
     private static GameServer instance;
 
-    public void updateServer(){
+    public void updateServer() throws SQLException {
         serverWorld.updateWorld();
         serverTicks++;
         if (serverTicks%5==0) {
             try {
-                FileUtils.saveWorld(new File("./save/world.txt"), serverWorld);
+                saveWorld(new File("./save/world.txt"), serverWorld);
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
     }
 
-    private void loadConfig() throws IOException {
-        config = FileUtils.loadConfig(new File("./save/config.txt"));
+    private void loadConf() throws IOException {
+        config = loadConfig(new File("./save/config.txt"));
         if(config!=null) return;
         config = new GameConfig();
-        FileUtils.saveConfig(new File("./save/config.txt"), config);
+        saveConfig(new File("./save/config.txt"), config);
     }
 
-    private void loadWorld() throws IOException {
-        serverWorld = FileUtils.loadWorld(new File("./save/world.txt"));
+    private void loadworld() throws IOException, SQLException {
+        serverWorld = loadWorld(new File("./save/world.txt"));
         if(serverWorld!=null) return;
         serverWorld = new World();
-        FileUtils.saveWorld(new File("./save/world.txt"), serverWorld);
+        saveWorld(new File("./save/world.txt"), serverWorld);
     }
 
-    public GameServer(GameConfig config, World serverWorld) {
+    public GameServer(GameConfig config, World serverWorld) throws SQLException {
+        createTableEntity();
+        createTablePlayer();
+        createTableLogs();
         instance = this;
         this.config = config;
         this.serverWorld = serverWorld;
     }
 
-    public GameServer() throws IOException {
+    public GameServer() throws SQLException {
+        createTableEntity();
+        createTablePlayer();
+        createTableLogs();
         instance = this;
         config = new GameConfig();
         serverWorld = new World();
-        FileUtils.saveWorld(new File("./save/world.txt"), serverWorld);
-        FileUtils.saveConfig(new File("./save/config.txt"), config);
     }
 
     public static void main(String[] args) {
         try {
             new GameServer();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (SQLException throwables) {
+            throwables.printStackTrace();
+            return;
         }
-        /*try {
-            new GameServer(FileUtils.loadConfig(new File("./save/config.txt")), FileUtils.loadWorld(new File("./save/world.txt")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            new GameServer(FileUtils.loadConfig(new File("./save/config.txt")), FileUtils.loadWorld(new File("./save/world.txt")));
+//        } catch (IOException | SQLException e) {
+//            e.printStackTrace();
+//        }
         System.out.println("Success");
+        //System.out.println(instance.toString());
         for (int i = 0; i < 50; i++) {
-            GameServer.getInstance().updateServer();
+            try {
+                GameServer.getInstance().updateServer();
+            } catch (SQLException throwables) {
+                throwables.printStackTrace();
+            }
             try {
                 Thread.sleep(GameServer.getInstance().getConfig().getUpdatePeriod());
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }*/
+        }
     }
 
     @Override
